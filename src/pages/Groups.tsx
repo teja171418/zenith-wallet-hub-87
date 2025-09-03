@@ -6,6 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Plus, Users, MapPin, Calendar, DollarSign, Settings, Eye, TrendingUp, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
+import MobileNavigation from "@/components/MobileNavigation";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Group {
@@ -98,7 +99,8 @@ const Groups = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-background">
+    <div className="min-h-screen bg-gradient-background no-scroll-x">
+      {/* Desktop Navigation */}
       <Navigation 
         activeMode={activeMode} 
         onModeChange={setActiveMode}
@@ -106,32 +108,42 @@ const Groups = () => {
         onSubNavChange={handleNavigation}
       />
       
-      <main className={`pt-24 pb-8 max-w-7xl mx-auto spacing-responsive ${
-        isMobile ? 'px-2' : 'px-4 sm:px-6 lg:px-8'
-      }`}>
-        <div className="space-y-8">
+      {/* Mobile Navigation */}
+      <MobileNavigation
+        activeMode={activeMode} 
+        onModeChange={setActiveMode}
+        activeSubNav={activeSubNav}
+        onSubNavChange={handleNavigation}
+      />
+      
+      <main className={`
+        ${isMobile ? 'pt-16 pb-24' : 'pt-32 pb-8'} 
+        max-w-7xl mx-auto spacing-responsive
+        ${isMobile ? 'container-mobile px-safe-left px-safe-right' : 'container-desktop'}
+      `}>
+        <div className="space-y-6">
           {/* Enhanced Header */}
-          <div className="text-center space-y-6 animate-fade-in">
+          <div className="text-center space-y-4 animate-fade-in">
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-4">
               <Users className="w-5 h-5 mr-2 text-primary" />
-              <span className="text-white/80 text-sm font-medium">Group Management</span>
+              <span className="text-white/80 text-responsive-sm font-medium">Group Management</span>
             </div>
             
-            <h1 className="text-4xl md:text-5xl font-bold text-gradient-cyber mb-4">
+            <h1 className={`${isMobile ? 'text-3xl' : 'text-4xl md:text-5xl'} font-bold text-gradient-cyber mb-4`}>
               My Groups
             </h1>
             
-            <p className="text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-responsive-lg text-white/70 max-w-2xl mx-auto leading-relaxed">
               Manage your shared expenses and stay connected with your groups
             </p>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} gap-4 justify-center items-center`}>
             <Button 
               onClick={() => navigate('/create-group')}
               size="lg"
-              className="group relative overflow-hidden px-8 py-4 bg-gradient-primary text-white hover:shadow-glow transition-all duration-300 hover-lift"
+              className="group relative overflow-hidden px-8 py-4 bg-gradient-primary text-white hover:shadow-glow transition-all duration-300 hover-lift touch-target w-full sm:w-auto"
             >
               <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
               Create New Group
@@ -141,7 +153,7 @@ const Groups = () => {
               variant="outline"
               size="lg"
               onClick={() => {/* Handle join group */}}
-              className="px-8 py-4 border-white/20 text-white hover:bg-white/10 backdrop-blur-sm hover-lift transition-all duration-300"
+              className="px-8 py-4 border-white/20 text-white hover:bg-white/10 backdrop-blur-sm hover-lift transition-all duration-300 touch-target w-full sm:w-auto"
             >
               <UserPlus className="w-5 h-5 mr-2" />
               Join Group
@@ -150,25 +162,25 @@ const Groups = () => {
 
           {/* Groups Grid */}
           {groups.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-mobile-1 grid-tablet-2 lg:grid-cols-3 gap-responsive">
               {groups.map((group, index) => (
                 <Card 
                   key={group.id} 
-                  className="group relative overflow-hidden bg-white/5 backdrop-blur-xl border-white/10 hover:border-white/20 transition-all duration-500 hover:shadow-2xl hover-lift animate-slide-in-up cursor-pointer"
+                  className="group relative overflow-hidden bg-white/5 backdrop-blur-xl border-white/10 hover:border-white/20 transition-all duration-500 hover:shadow-2xl hover-lift animate-slide-in-up cursor-pointer touch-target"
                   style={{ animationDelay: `${index * 0.1}s` }}
                   onClick={() => navigate(`/group/${group.id}`)}
                 >
-                  <CardHeader className="pb-3">
+                  <CardHeader className={`${isMobile ? 'pb-2' : 'pb-3'}`}>
                     <div className="flex items-start justify-between">
                       <div className="flex items-center space-x-3">
-                        <Avatar className="w-12 h-12 border-2 border-white/20">
+                        <Avatar className={`${isMobile ? 'w-10 h-10' : 'w-12 h-12'} border-2 border-white/20`}>
                           <AvatarImage src={group.avatar} />
-                          <AvatarFallback className="bg-gradient-primary text-white font-bold">
+                          <AvatarFallback className="bg-gradient-primary text-white font-bold text-responsive-sm">
                             {group.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <CardTitle className="text-white text-lg group-hover:text-primary transition-colors">
+                          <CardTitle className={`text-white ${isMobile ? 'text-base' : 'text-lg'} group-hover:text-primary transition-colors`}>
                             {group.name}
                           </CardTitle>
                           <div className="flex items-center space-x-2 mt-1">
@@ -187,43 +199,45 @@ const Groups = () => {
                         </div>
                       </div>
                       
-                      <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Settings className="w-4 h-4 text-white/60" />
-                      </Button>
+                      {!isMobile && (
+                        <Button variant="ghost" size="icon-sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Settings className="w-4 h-4 text-white/60" />
+                        </Button>
+                      )}
                     </div>
                     
-                    <CardDescription className="text-white/60 mt-2 line-clamp-2">
+                    <CardDescription className="text-white/60 mt-2 line-clamp-2 text-responsive-sm">
                       {group.description}
                     </CardDescription>
                   </CardHeader>
 
                   <CardContent className="space-y-4">
                     {/* Key Metrics */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="text-center p-3 rounded-lg bg-white/5 border border-white/10">
-                        <DollarSign className="w-5 h-5 text-primary mx-auto mb-1" />
-                        <div className="text-white font-semibold">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className={`text-center ${isMobile ? 'p-2' : 'p-3'} rounded-lg bg-white/5 border border-white/10`}>
+                        <DollarSign className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'} text-primary mx-auto mb-1`} />
+                        <div className={`text-white font-semibold ${isMobile ? 'text-sm' : ''}`}>
                           {group.currency} {group.totalExpenses.toFixed(2)}
                         </div>
                         <div className="text-white/60 text-xs">Total Expenses</div>
                       </div>
                       
-                      <div className="text-center p-3 rounded-lg bg-white/5 border border-white/10">
-                        <Users className="w-5 h-5 text-secondary mx-auto mb-1" />
-                        <div className="text-white font-semibold">{group.memberCount}</div>
+                      <div className={`text-center ${isMobile ? 'p-2' : 'p-3'} rounded-lg bg-white/5 border border-white/10`}>
+                        <Users className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'} text-secondary mx-auto mb-1`} />
+                        <div className={`text-white font-semibold ${isMobile ? 'text-sm' : ''}`}>{group.memberCount}</div>
                         <div className="text-white/60 text-xs">Members</div>
                       </div>
                     </div>
 
                     {/* Your Balance */}
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-white/5 to-white/10 border border-white/10">
+                    <div className={`flex items-center justify-between ${isMobile ? 'p-2' : 'p-3'} rounded-lg bg-gradient-to-r from-white/5 to-white/10 border border-white/10`}>
                       <div className="flex items-center space-x-2">
                         <TrendingUp className="w-4 h-4 text-accent" />
-                        <span className="text-white/80 text-sm">Your Balance</span>
+                        <span className="text-white/80 text-responsive-sm">Your Balance</span>
                       </div>
                       <div className={`font-bold ${
                         group.yourBalance >= 0 ? 'text-green-400' : 'text-red-400'
-                      }`}>
+                      } ${isMobile ? 'text-sm' : ''}`}>
                         {group.yourBalance >= 0 ? '+' : ''}{group.currency} {Math.abs(group.yourBalance).toFixed(2)}
                       </div>
                     </div>
@@ -238,7 +252,7 @@ const Groups = () => {
                       <Button 
                         variant="ghost" 
                         size="sm"
-                        className="text-primary hover:text-white hover:bg-primary/20 transition-all"
+                        className="text-primary hover:text-white hover:bg-primary/20 transition-all touch-target"
                         onClick={(e) => {
                           e.stopPropagation();
                           navigate(`/group/${group.id}`);
@@ -257,14 +271,14 @@ const Groups = () => {
               <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-white/5 flex items-center justify-center">
                 <Users className="w-12 h-12 text-white/40" />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-2">No Groups Yet</h3>
-              <p className="text-white/60 mb-6 max-w-md mx-auto">
+              <h3 className="text-responsive-xl font-bold text-white mb-2">No Groups Yet</h3>
+              <p className="text-white/60 mb-6 max-w-md mx-auto text-responsive-base">
                 Create your first group to start sharing expenses with friends, family, or colleagues.
               </p>
               <Button 
                 onClick={() => navigate('/create-group')}
                 size="lg"
-                className="bg-gradient-primary text-white hover:shadow-glow transition-all duration-300"
+                className="bg-gradient-primary text-white hover:shadow-glow transition-all duration-300 touch-target"
               >
                 <Plus className="w-5 h-5 mr-2" />
                 Create Your First Group

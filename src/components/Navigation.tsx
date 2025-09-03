@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Users, User, Home, Plus, UserPlus, Wallet, PieChart, History, Settings, TrendingUp } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface NavigationProps {
   activeMode: 'group' | 'personal';
@@ -10,6 +11,8 @@ interface NavigationProps {
 }
 
 const Navigation = ({ activeMode, onModeChange, activeSubNav, onSubNavChange }: NavigationProps) => {
+  const isMobile = useIsMobile();
+
   const groupNavItems = [
     { id: 'home', label: 'Home', icon: Home },
     { id: 'create-group', label: 'Create Group', icon: Plus },
@@ -28,21 +31,26 @@ const Navigation = ({ activeMode, onModeChange, activeSubNav, onSubNavChange }: 
 
   const currentNavItems = activeMode === 'group' ? groupNavItems : personalNavItems;
 
+  // Hide navigation on mobile - will be replaced by MobileNavigation
+  if (isMobile) {
+    return null;
+  }
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-xl border-b border-white/10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto container-desktop">
         {/* Main Mode Toggle */}
-        <div className="flex items-center justify-between py-3">
+        <div className="flex items-center justify-between py-4">
           {/* Logo and Mode Toggles */}
-          <div className="flex items-center space-x-4">
-            <div className="text-gradient-cyber font-bold text-lg hidden sm:block">
+          <div className="flex items-center space-x-6">
+            <div className="text-gradient-cyber font-bold text-xl">
               Zenith Wallet
             </div>
             
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center space-x-2">
               <Button
                 variant={activeMode === 'group' ? 'default' : 'ghost'}
-                size="sm"
+                size="default"
                 onClick={() => onModeChange('group')}
                 className={`${
                   activeMode === 'group' 
@@ -50,13 +58,12 @@ const Navigation = ({ activeMode, onModeChange, activeSubNav, onSubNavChange }: 
                     : 'nav-inactive'
                 } transition-all duration-300 hover-lift`}
               >
-                <Users className="w-4 h-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Group Expenses</span>
-                <span className="sm:hidden">Group</span>
+                <Users className="w-5 h-5 mr-3" />
+                Group Expenses
               </Button>
               <Button
                 variant={activeMode === 'personal' ? 'default' : 'ghost'}
-                size="sm"
+                size="default"
                 onClick={() => onModeChange('personal')}
                 className={`${
                   activeMode === 'personal' 
@@ -64,9 +71,8 @@ const Navigation = ({ activeMode, onModeChange, activeSubNav, onSubNavChange }: 
                     : 'nav-inactive'
                 } transition-all duration-300 hover-lift`}
               >
-                <User className="w-4 h-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Personal</span>
-                <span className="sm:hidden">Personal</span>
+                <User className="w-5 h-5 mr-3" />
+                Personal Finance
               </Button>
             </div>
           </div>
@@ -74,7 +80,7 @@ const Navigation = ({ activeMode, onModeChange, activeSubNav, onSubNavChange }: 
           {/* Profile Button */}
           <Button
             variant="ghost"
-            size="sm"
+            size="default"
             onClick={() => onSubNavChange('profile')}
             className={`${
               activeSubNav === 'profile' 
@@ -82,20 +88,20 @@ const Navigation = ({ activeMode, onModeChange, activeSubNav, onSubNavChange }: 
                 : 'nav-inactive'
             } transition-all duration-300 hover-lift`}
           >
-            <Settings className="w-4 h-4 mr-1 sm:mr-2" />
-            <span className="hidden sm:inline">Profile</span>
+            <Settings className="w-5 h-5 mr-3" />
+            Profile & Settings
           </Button>
         </div>
 
         {/* Sub Navigation */}
-        <div className="flex items-center space-x-1 pb-3 overflow-x-auto scrollbar-hide">
+        <div className="flex items-center space-x-2 pb-4">
           {currentNavItems.map((item, index) => {
             const Icon = item.icon;
             return (
               <Button
                 key={item.id}
                 variant="ghost"
-                size="sm"
+                size="default"
                 onClick={() => onSubNavChange(item.id)}
                 className={`${
                   activeSubNav === item.id 
@@ -104,8 +110,8 @@ const Navigation = ({ activeMode, onModeChange, activeSubNav, onSubNavChange }: 
                 } transition-all duration-300 whitespace-nowrap hover-lift animate-slide-in-left`}
                 style={{ animationDelay: `${index * 0.05}s` }}
               >
-                <Icon className="w-4 h-4 mr-2" />
-                <span className="text-responsive-xs">{item.label}</span>
+                <Icon className="w-5 h-5 mr-3" />
+                <span>{item.label}</span>
               </Button>
             );
           })}

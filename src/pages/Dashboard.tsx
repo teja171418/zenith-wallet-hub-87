@@ -7,11 +7,13 @@ import QRScanner from "@/components/QRScanner";
 import PersonalPaymentHistory from "@/components/PersonalPaymentHistory";
 import MoneyManagement from "@/components/MoneyManagement";
 import AdvancedInsights from "@/components/AdvancedInsights";
+import ResponsiveTable, { ResponsiveTableRow } from "@/components/ResponsiveTable";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Wallet, TrendingUp, TrendingDown, Users, Calendar, Search, Filter, Plus } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 interface DashboardProps {
   mode?: 'group' | 'personal';
 }
@@ -19,6 +21,7 @@ const Dashboard = ({
   mode = 'group'
 }: DashboardProps) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const isMobile = useIsMobile();
 
   // Enhanced Mock Data with realistic scenarios
   const statsData = {
@@ -212,23 +215,35 @@ const Dashboard = ({
   const currentExpenses = recentExpenses[mode];
   const currentChart = chartData[mode];
   if (mode === 'personal') {
-    return <div className="space-y-8 py-6">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    return <div className="space-y-6 py-4">
+        {/* Stats Cards - Mobile First Grid */}
+        <div className="grid grid-mobile-1 grid-tablet-2 grid-desktop-4 gap-responsive">
           {currentStats.map((stat, index) => <StatsCard key={index} {...stat} />)}
         </div>
 
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 bg-card/80 backdrop-blur-lg border border-border">
-            <TabsTrigger value="overview" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Overview</TabsTrigger>
-            <TabsTrigger value="payments" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">QR Payments</TabsTrigger>
-            <TabsTrigger value="history" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Payment History</TabsTrigger>
-            <TabsTrigger value="money" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Money Management</TabsTrigger>
-            <TabsTrigger value="insights" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Insights</TabsTrigger>
+          <TabsList className={`
+            grid w-full grid-cols-2 md:grid-cols-5 
+            bg-card/80 backdrop-blur-lg border border-border
+            ${isMobile ? 'text-xs' : 'text-sm'}
+          `}>
+            <TabsTrigger value="overview" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-responsive-xs">
+              {isMobile ? 'Overview' : 'Overview'}
+            </TabsTrigger>
+            <TabsTrigger value="payments" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-responsive-xs">
+              {isMobile ? 'QR Pay' : 'QR Payments'}
+            </TabsTrigger>
+            {!isMobile && (
+              <>
+                <TabsTrigger value="history" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">History</TabsTrigger>
+                <TabsTrigger value="money" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Money Management</TabsTrigger>
+                <TabsTrigger value="insights" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Insights</TabsTrigger>
+              </>
+            )}
           </TabsList>
           
           <TabsContent value="overview" className="mt-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-mobile-1 lg:grid-cols-3 gap-responsive">
               <div className="lg:col-span-1">
                 <QuickActions mode={mode} />
               </div>
@@ -239,22 +254,31 @@ const Dashboard = ({
             
             {/* Recent Personal Expenses */}
             <Card className="glass-card animate-slide-up mt-6">
-              <div className="p-6 bg-card/90 backdrop-blur-lg">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-card-foreground">Recent Personal Expenses</h3>
-                  <div className="flex items-center space-x-2">
-                    <div className="relative">
+              <div className={`${isMobile ? 'card-mobile' : 'card-desktop'} bg-card/90 backdrop-blur-lg`}>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+                  <h3 className="text-responsive-lg font-semibold text-card-foreground">Recent Personal Expenses</h3>
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+                    <div className="relative flex-1 sm:flex-none">
                       <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-                      <Input placeholder="Search expenses..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10 w-64 bg-input border-border" />
+                      <Input 
+                        placeholder="Search expenses..." 
+                        value={searchTerm} 
+                        onChange={e => setSearchTerm(e.target.value)} 
+                        className="pl-10 w-full sm:w-64 bg-input border-border touch-target" 
+                      />
                     </div>
-                    <Button variant="outline" size="sm">
-                      <Filter className="w-4 h-4 mr-2" />
-                      Filter
-                    </Button>
-                    <Button size="sm">
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Expense
-                    </Button>
+                    {!isMobile && (
+                      <>
+                        <Button variant="outline" size="default" className="touch-target">
+                          <Filter className="w-4 h-4 mr-2" />
+                          Filter
+                        </Button>
+                        <Button size="default" className="touch-target">
+                          <Plus className="w-4 h-4 mr-2" />
+                          Add Expense
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
                 <div className="space-y-4">
@@ -265,22 +289,22 @@ const Dashboard = ({
           </TabsContent>
           
           <TabsContent value="payments" className="mt-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-mobile-1 lg:grid-cols-2 gap-responsive">
               <QRScanner />
               <Card className="glass-card">
-                <div className="p-6 bg-card/90 backdrop-blur-lg">
-                  <h3 className="text-lg font-semibold mb-4 text-card-foreground">Quick Payment Options</h3>
+                <div className={`${isMobile ? 'card-mobile' : 'card-desktop'} bg-card/90 backdrop-blur-lg`}>
+                  <h3 className="text-responsive-lg font-semibold mb-4 text-card-foreground">Quick Payment Options</h3>
                   <div className="space-y-3">
-                    <Button variant="outline" className="w-full justify-start">
-                      <Wallet className="h-4 w-4 mr-2" />
+                    <Button variant="outline" className="w-full justify-start touch-target">
+                      <Wallet className="h-5 w-5 mr-3" />
                       Pay to Contact
                     </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <Users className="h-4 w-4 mr-2" />
+                    <Button variant="outline" className="w-full justify-start touch-target">
+                      <Users className="h-5 w-5 mr-3" />
                       Split Bill
                     </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <Calendar className="h-4 w-4 mr-2" />
+                    <Button variant="outline" className="w-full justify-start touch-target">
+                      <Calendar className="h-5 w-5 mr-3" />
                       Pay Bills
                     </Button>
                   </div>
@@ -289,28 +313,32 @@ const Dashboard = ({
             </div>
           </TabsContent>
           
-          <TabsContent value="history" className="mt-6">
-            <PersonalPaymentHistory />
-          </TabsContent>
-          
-          <TabsContent value="money" className="mt-6">
-            <MoneyManagement />
-          </TabsContent>
-          
-          <TabsContent value="insights" className="mt-6">
-            <AdvancedInsights mode={mode} />
-          </TabsContent>
+          {!isMobile && (
+            <>
+              <TabsContent value="history" className="mt-6">
+                <PersonalPaymentHistory />
+              </TabsContent>
+              
+              <TabsContent value="money" className="mt-6">
+                <MoneyManagement />
+              </TabsContent>
+              
+              <TabsContent value="insights" className="mt-6">
+                <AdvancedInsights mode={mode} />
+              </TabsContent>
+            </>
+          )}
         </Tabs>
       </div>;
   }
-  return <div className="space-y-8 py-6">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+  return <div className="space-y-6 py-4">
+      {/* Stats Cards - Mobile First Grid */}
+      <div className="grid grid-mobile-1 grid-tablet-2 grid-desktop-4 gap-responsive">
         {currentStats.map((stat, index) => <StatsCard key={index} {...stat} />)}
       </div>
 
       {/* Quick Actions & Chart */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-mobile-1 lg:grid-cols-3 gap-responsive">
         <div className="lg:col-span-1">
           <QuickActions mode={mode} />
         </div>
@@ -321,22 +349,31 @@ const Dashboard = ({
 
       {/* Recent Expenses */}
       <Card className="glass-card animate-slide-up">
-        <div className="p-6 bg-card/90 backdrop-blur-lg">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-card-foreground">Recent Group Expenses</h3>
-            <div className="flex items-center space-x-2">
-              <div className="relative">
+        <div className={`${isMobile ? 'card-mobile' : 'card-desktop'} bg-card/90 backdrop-blur-lg`}>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+            <h3 className="text-responsive-lg font-semibold text-card-foreground">Recent Group Expenses</h3>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+              <div className="relative flex-1 sm:flex-none">
                 <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-                <Input placeholder="Search expenses..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10 w-64 bg-input border-border" />
+                <Input 
+                  placeholder="Search expenses..." 
+                  value={searchTerm} 
+                  onChange={e => setSearchTerm(e.target.value)} 
+                  className="pl-10 w-full sm:w-64 bg-input border-border touch-target" 
+                />
               </div>
-              <Button variant="outline" size="sm">
-                <Filter className="w-4 h-4 mr-2" />
-                Filter
-              </Button>
-              <Button size="sm">
-                <Plus className="w-4 h-4 mr-2" />
-                Add New
-              </Button>
+              {!isMobile && (
+                <>
+                  <Button variant="outline" size="default" className="touch-target">
+                    <Filter className="w-4 h-4 mr-2" />
+                    Filter
+                  </Button>
+                  <Button size="default" className="touch-target">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add New
+                  </Button>
+                </>
+              )}
             </div>
           </div>
           <div className="space-y-4">

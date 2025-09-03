@@ -378,15 +378,148 @@
   }
 }
 
-/* Responsive Design Helpers */
-@media (max-width: 640px) {
+/* Enhanced Mobile-First Responsive Design */
+
+/* Mobile First (320px) */
+@media (min-width: 320px) {
+  .container-mobile {
+    @apply px-4 mx-auto max-w-sm;
+  }
+  
+  .text-mobile {
+    @apply text-sm leading-relaxed;
+  }
+  
+  .button-mobile {
+    @apply min-h-[48px] min-w-[48px] text-base px-6;
+  }
+  
+  .card-mobile {
+    @apply p-4 mx-2 rounded-lg;
+  }
+  
+  .grid-mobile-1 {
+    @apply grid-cols-1;
+  }
+}
+
+/* Tablet (768px) */
+@media (min-width: 768px) {
+  .container-tablet {
+    @apply px-6 mx-auto max-w-4xl;
+  }
+  
+  .text-tablet {
+    @apply text-base;
+  }
+  
+  .button-tablet {
+    @apply min-h-[44px] text-sm px-4;
+  }
+  
+  .card-tablet {
+    @apply p-6 mx-4 rounded-xl;
+  }
+  
+  .grid-tablet-2 {
+    @apply grid-cols-2;
+  }
+  
+  .grid-tablet-3 {
+    @apply grid-cols-3;
+  }
+}
+
+/* Desktop (1024px) */
+@media (min-width: 1024px) {
+  .container-desktop {
+    @apply px-8 mx-auto max-w-7xl;
+  }
+  
+  .text-desktop {
+    @apply text-lg;
+  }
+  
+  .button-desktop {
+    @apply min-h-[40px] text-sm px-4;
+  }
+  
+  .card-desktop {
+    @apply p-8 mx-0 rounded-2xl;
+  }
+  
+  .grid-desktop-4 {
+    @apply grid-cols-4;
+  }
+  
+  .grid-desktop-5 {
+    @apply grid-cols-5;
+  }
+}
+
+/* Mobile Specific Styles */
+@media (max-width: 767px) {
   .glass-card {
-    @apply mx-2;
+    @apply mx-2 rounded-lg;
   }
   
   .text-gradient {
     background-size: 200% 200%;
     animation: gradientShift 3s ease infinite;
+  }
+  
+  /* Touch-friendly spacing */
+  .touch-target {
+    @apply min-h-[48px] min-w-[48px];
+  }
+  
+  /* Prevent horizontal scroll */
+  .no-scroll-x {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+  
+  /* Collapsible cards */
+  .card-collapsible {
+    @apply transition-all duration-300;
+  }
+  
+  .card-collapsible.collapsed {
+    @apply max-h-20 overflow-hidden;
+  }
+  
+  /* Swipe-friendly spacing */
+  .swipe-area {
+    @apply py-4 px-2;
+  }
+  
+  /* Mobile table scroll */
+  .table-mobile-scroll {
+    @apply overflow-x-auto scrollbar-hide;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Sticky mobile actions */
+  .mobile-sticky-actions {
+    @apply fixed bottom-4 left-4 right-4 z-50;
+  }
+}
+
+/* Landscape orientation adjustments */
+@media (orientation: landscape) and (max-height: 600px) {
+  .landscape-compact {
+    @apply py-2;
+  }
+  
+  .landscape-nav {
+    @apply h-12;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .high-dpi {
+    @apply border border-white/20;
   }
 }
 

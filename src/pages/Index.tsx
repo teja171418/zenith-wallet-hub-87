@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
+import MobileNavigation from "@/components/MobileNavigation";
+import StickyActionBar from "@/components/StickyActionBar";
 import Dashboard from "./Dashboard";
 import CreateGroup from "./CreateGroup";
 import JoinGroup from "./JoinGroup";
@@ -120,7 +122,8 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-background">
+    <div className="min-h-screen bg-gradient-background no-scroll-x">
+      {/* Desktop Navigation */}
       <Navigation 
         activeMode={activeMode} 
         onModeChange={setActiveMode}
@@ -128,9 +131,19 @@ const Index = () => {
         onSubNavChange={handleNavigation}
       />
       
-      <main className={`pt-24 pb-8 max-w-7xl mx-auto spacing-responsive ${
-        isMobile ? 'px-2' : 'px-4 sm:px-6 lg:px-8'
-      }`}>
+      {/* Mobile Navigation */}
+      <MobileNavigation
+        activeMode={activeMode} 
+        onModeChange={setActiveMode}
+        activeSubNav={activeSubNav}
+        onSubNavChange={handleNavigation}
+      />
+      
+      <main className={`
+        ${isMobile ? 'pt-16 pb-24' : 'pt-32 pb-8'} 
+        max-w-7xl mx-auto spacing-responsive
+        ${isMobile ? 'container-mobile px-safe-left px-safe-right' : 'container-desktop'}
+      `}>
         {isMobile ? (
           <PullToRefresh onRefresh={handleRefresh}>
             <div className="animate-fade-in">
@@ -144,8 +157,19 @@ const Index = () => {
         )}
       </main>
 
-      {/* Floating Action Button - Hidden on welcome screen */}
-      {!(isNewUser && showWelcome && activeSubNav === 'home') && (
+      {/* Mobile Sticky Action Bar */}
+      {isMobile && !(isNewUser && showWelcome && activeSubNav === 'home') && (
+        <StickyActionBar
+          onAddExpense={() => handleFloatingAction('addExpense')}
+          onSendMoney={() => handleFloatingAction('sendMoney')}
+          onScanQR={() => handleFloatingAction('scanQR')}
+          onCalculate={() => handleFloatingAction('calculate')}
+          mode={activeMode}
+        />
+      )}
+
+      {/* Desktop Floating Action Button */}
+      {!isMobile && !(isNewUser && showWelcome && activeSubNav === 'home') && (
         <FloatingActionButton
           onAddExpense={() => handleFloatingAction('addExpense')}
           onSendMoney={() => handleFloatingAction('sendMoney')}
